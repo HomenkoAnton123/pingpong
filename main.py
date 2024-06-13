@@ -5,9 +5,13 @@ W = 800
 H = 500
 
 window = display.set_mode((W, H))
-bg = transform.scale(image.load('fon1.png'), (W, H))# Трансформуємо картинку в розміри вікна
+bg = transform.scale(image.load('sto.png'), (W, H))# Трансформуємо картинку в розміри вікна
 
 clock = time.Clock()# Лічильник кадрів
+
+font.init()
+font1 = font.SysFont('Arial', 30, bold=True)
+font2 = font.SysFont('Arial', 50, italic=True)
 
 class GameSprite(sprite.Sprite): # Базовий клас для всіх спрайтів
     def __init__(self, img, x, y, width, height, speed_x, speed_y):# Конструктор класу
@@ -46,9 +50,12 @@ class Ball(GameSprite):
         self.rect.x += self.speed_x
         self.rect.y -= self.speed_y
 
-player1 = Player('Racket1.png', 5, 5, 110, 100, 10, 10)
-player2 = Player('Racket2.png', 700, 250, 110, 100, 10, 10)
+player1 = Player('батут2.png', 5, 5, 110, 100, 10, 10)
+player2 = Player('батут1.png', 700, 250, 110, 100, 10, 10)
 ball = Ball('koleso.png', W / 2, H / 2, 70, 70, 4, 4)
+
+player1_points = 0
+player2_points = 0
 
 game = True
 while game:
@@ -60,6 +67,11 @@ while game:
     player1.update_l()
     player2.update_r()
 
+    player1_txt = font2.render(str(player1_points), 1, (0, 0, 0))
+    player2_txt = font2.render(str(player2_points), 1, (0, 0, 0))
+    window.blit(player1_txt, (100, 10))
+    window.blit(player2_txt, (700, 10))
+
     ball.move()
     for e in event.get():
         if e.type == QUIT:
@@ -70,6 +82,16 @@ while game:
     
     if ball.rect.y < 0 or ball.rect.y > H - ball.height:
         ball.speed_y *= -1
+
+    if ball.rect.x <  0:
+        player2_points += 1
+        ball.rect.x = W / 2
+        ball.rect.y = H / 2
+
+    if ball.rect.x > W:
+        player1_points += 1
+        ball.rect.x = W / 2
+        ball.rect.y = H / 2
 
 
     clock.tick(100)
